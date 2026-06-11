@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CARGO SALON ’27 — One-Stop Automotive Customization · Taipei · Oct 10–12, 2027</title>
+  <meta name="description" content="Taiwan's first one-stop automotive customization exhibition. Eight zones, 120+ studios & brands, three days at TaiNEX 1, Taipei. Oct 10–12, 2027. Tickets from NT$300." />
+  <meta property="og:title" content="CARGO SALON ’27 — Taipei" />
+  <meta property="og:description" content="One-stop automotive customization. Oct 10–12, 2027 · TaiNEX 1, Taipei. Tickets from NT$300." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='2.6' fill='%23D7FF3E'/%3E%3Ccircle cx='12' cy='4.5' r='1.9' fill='%23D7FF3E'/%3E%3Ccircle cx='19.1' cy='9.7' r='1.9' fill='%23D7FF3E'/%3E%3Ccircle cx='16.4' cy='18.1' r='1.9' fill='%23D7FF3E'/%3E%3Ccircle cx='7.6' cy='18.1' r='1.9' fill='%23D7FF3E'/%3E%3Ccircle cx='4.9' cy='9.7' r='1.9' fill='%23D7FF3E'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <div class="grain" aria-hidden="true"></div>
+  <div class="cursor-dot" aria-hidden="true"></div>
+  <div class="cursor-ring" aria-hidden="true"><span class="cursor-label"></span></div>
+
+  <!-- ══════════ LOADER ══════════ -->
+  <div class="loader" aria-hidden="true">
+    <div class="loader-col c1"></div>
+    <div class="loader-col c2"></div>
+    <div class="loader-core">
+      <svg class="lug lug-spin" viewBox="0 0 24 24" width="34" height="34" aria-hidden="true">
+        <circle cx="12" cy="12" r="2.6" fill="currentColor"/>
+        <circle cx="12" cy="4.5" r="1.9" fill="currentColor"/>
+        <circle cx="19.1" cy="9.7" r="1.9" fill="currentColor"/>
+        <circle cx="16.4" cy="18.1" r="1.9" fill="currentColor"/>
+        <circle cx="7.6" cy="18.1" r="1.9" fill="currentColor"/>
+        <circle cx="4.9" cy="9.7" r="1.9" fill="currentColor"/>
+      </svg>
+      <div class="loader-count"><span id="loadNum">00</span><i>%</i></div>
+      <p class="loader-tag">ONE-STOP AUTOMOTIVE CUSTOMIZATION</p>
+    </div>
+  </div>
+
+  <!-- ══════════ NAV ══════════ -->
+  <header class="nav">
+    <a class="brand" href="#hero" data-cursor>
+      <svg class="lug" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <circle cx="12" cy="12" r="2.6" fill="currentColor"/>
+        <circle cx="12" cy="4.5" r="1.9" fill="currentColor"/>
+        <circle cx="19.1" cy="9.7" r="1.9" fill="currentColor"/>
+        <circle cx="16.4" cy="18.1" r="1.9" fill="currentColor"/>
+        <circle cx="7.6" cy="18.1" r="1.9" fill="currentColor"/>
+        <circle cx="4.9" cy="9.7" r="1.9" fill="currentColor"/>
+      </svg>
+      <span class="brand-name">CARGO&nbsp;SALON<em>’27</em></span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#manifesto" data-cursor>Manifesto</a>
+      <a href="#zones" data-cursor>Zones</a>
+      <a href="#program" data-cursor>Program</a>
+      <a href="#exhibitors" data-cursor>Exhibitors</a>
+      <a href="#schedule" data-cursor>Schedule</a>
+      <a href="#venue" data-cursor>Venue</a>
+    </nav>
+    <div class="nav-right">
+      <span class="lang" title="中文版 coming soon"><b>EN</b><i>/</i><span>中</span></span>
+      <a class="btn btn-volt magnetic" href="#tickets" data-cursor>GET&nbsp;TICKETS</a>
+      <button class="burger" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
+    </div>
+  </header>
+
+  <!-- ══════════ FULLSCREEN MENU ══════════ -->
+  <div class="menu-overlay" aria-hidden="true">
+    <nav class="menu-links" aria-label="Menu">
+      <a href="#manifesto"><i>01</i>MANIFESTO</a>
+      <a href="#zones"><i>02</i>ZONES</a>
+      <a href="#program"><i>03</i>PROGRAM</a>
+      <a href="#exhibitors"><i>04</i>EXHIBITORS</a>
+      <a href="#schedule"><i>05</i>SCHEDULE</a>
+      <a href="#tickets"><i>06</i>TICKETS</a>
+      <a href="#venue"><i>07</i>VENUE</a>
+    </nav>
+    <div class="menu-meta">
+      <span>OCT 10—12, 2027</span>
+      <span>TAINEX 1 · TAIPEI</span>
+      <span>ONE-STOP AUTOMOTIVE CUSTOMIZATION</span>
+    </div>
+  </div>
+
+  <!-- ══════════ WEBGL ══════════ -->
+  <canvas id="webgl" aria-hidden="true"></canvas>
+
+  <main>
+
+    <!-- ══════════ HERO ══════════ -->
+    <section class="hero" id="hero">
+      <div class="hero-meta">
+        <span class="hm">TAIPEI ✱ TAIWAN</span>
+        <span class="hm">TAINEX 1 · NANGANG</span>
+        <span class="hm">OCT 10—12 · 2027</span>
+      </div>
+
+      <h1 class="hero-title" aria-label="CarGo Salon 2027">
+        <span class="line l1">CARGO</span>
+        <span class="line l2 outline">SALON</span>
+      </h1>
+
+      <div class="hero-foot">
+        <p class="hero-sub">Three days. Eight zones. Every craft that turns<br />a machine into <em>yours</em> — under one roof.</p>
+        <div class="hero-cta">
+          <a href="#tickets" class="btn btn-volt btn-lg magnetic" data-cursor>TICKETS — FROM NT$300</a>
+          <a href="#manifesto" class="btn btn-ghost btn-lg magnetic" data-cursor>THE MANIFESTO</a>
+        </div>
+      </div>
+
+      <div class="hero-badge" aria-hidden="true">
+        <svg viewBox="0 0 200 200" width="150" height="150">
+          <defs>
+            <path id="circlePath" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" />
+          </defs>
+          <text>
+            <textPath href="#circlePath">ONE-STOP AUTOMOTIVE CUSTOMIZATION ✱ TAIPEI 2027 ✱</textPath>
+          </text>
+        </svg>
+        <svg class="lug badge-lug" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+          <circle cx="12" cy="12" r="2.6" fill="currentColor"/>
+          <circle cx="12" cy="4.5" r="1.9" fill="currentColor"/>
+          <circle cx="19.1" cy="9.7" r="1.9" fill="currentColor"/>
+          <circle cx="16.4" cy="18.1" r="1.9" fill="currentColor"/>
+          <circle cx="7.6" cy="18.1" r="1.9" fill="currentColor"/>
+          <circle cx="4.9" cy="9.7" r="1.9" fill="currentColor"/>
+        </svg>
+      </div>
+
+      <div class="scroll-cue" aria-hidden="true"><span class="cue-line"></span>SCROLL</div>
+    </section>
+
+    <!-- ══════════ MARQUEE ══════════ -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <div class="marquee-group">
+          <span>ONE-STOP AUTOMOTIVE CUSTOMIZATION</span><i>✱</i>
+          <span>WRAP</span><i>✱</i><span>TUNE</span><i>✱</i><span>STANCE</span><i>✱</i>
+          <span>SOUND</span><i>✱</i><span>TRIM</span><i>✱</i><span>COAT</span><i>✱</i>
+          <span>CARBON</span><i>✱</i><span>PAPERWORK</span><i>✱</i>
+        </div>
+        <div class="marquee-group">
+          <span>ONE-STOP AUTOMOTIVE CUSTOMIZATION</span><i>✱</i>
+          <span>WRAP</span><i>✱</i><span>TUNE</span><i>✱</i><span>STANCE</span><i>✱</i>
+          <span>SOUND</span><i>✱</i><span>TRIM</span><i>✱</i><span>COAT</span><i>✱</i>
+          <span>CARBON</span><i>✱</i><span>PAPERWORK</span><i>✱</i>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ MANIFESTO ══════════ -->
+    <section class="manifesto" id="manifesto">
+      <div class="sec-head">
+        <p class="sec-label">01 ✱ MANIFESTO</p>
+      </div>
+      <p class="manifesto-text">
+        A build is a hundred decisions made by twenty pairs of hands. For three days in Taipei,
+        all of those hands work the same floor. Paint to power, stance to sound, paperwork to
+        plate — walk in with a stock idea, walk out with a finished build sheet.
+      </p>
+      <p class="manifesto-note">( You won’t find a single car on this page. We saved every one of them for the show floor. )</p>
+
+      <div class="stats">
+        <div class="stat"><span class="stat-num" data-count="120" data-suffix="+">0</span><span class="stat-cap">EXHIBITORS</span></div>
+        <div class="stat"><span class="stat-num" data-count="8">0</span><span class="stat-cap">THEMED ZONES</span></div>
+        <div class="stat"><span class="stat-num" data-count="60" data-suffix="+">0</span><span class="stat-cap">LIVE DEMOS &amp; TALKS</span></div>
+        <div class="stat"><span class="stat-num" data-count="18000" data-suffix=" m²">0</span><span class="stat-cap">OF FLOOR. ONE ROOF.</span></div>
+      </div>
+    </section>
+
+    <!-- ══════════ ZONES (horizontal) ══════════ -->
+    <section class="zones" id="zones">
+      <div class="zones-inner">
+        <div class="sec-head">
+          <p class="sec-label">02 ✱ THE FLOOR</p>
+          <h2 class="sec-title">EIGHT ZONES. <span class="outline">EVERY CRAFT.</span></h2>
+        </div>
+        <div class="zones-viewport" data-cursor="scroll">
+          <div class="zones-track">
+
+            <article class="zone-card">
+              <header><span class="z-idx">Z—01</span><span class="z-cat">PAINT · WRAP · FILM</span></header>
+              <h3>CHROMA<br/>LAB</h3>
+              <p>Candy, pearl, satin, chrome. Live spray-booth and full-wrap demos every hour, a colour-matching bar, and thirty studios taking bookings on the spot.</p>
+              <ul class="z-tags"><li>Wrap</li><li>PPF</li><li>Custom Paint</li></ul>
+            </article>
+
+            <article class="zone-card">
+              <header><span class="z-idx">Z—02</span><span class="z-cat">WHEELS · SUSPENSION</span></header>
+              <h3>STANCE<br/>YARD</h3>
+              <p>Forged one-offs and flow-formed daily sets. Air-ride vs. coilover clinics, laser fitment scans, and the year’s wildest wheel gallery.</p>
+              <ul class="z-tags"><li>Forged</li><li>Air Ride</li><li>Fitment</li></ul>
+            </article>
+
+            <article class="zone-card">
+              <header><span class="z-idx">Z—03</span><span class="z-cat">POWER · CALIBRATION</span></header>
+              <h3>TORQUE<br/>HALL</h3>
+              <p>ECU benches, turbo kits and exhaust acoustic rooms — plus a glass-walled dyno cell running narrated sessions all day.</p>
+              <ul class="z-tags"><li>ECU</li><li>Turbo</li><li>Dyno</li></ul>
+            </article>
+
+            <article class="zone-card">
+              <header><span class="z-idx">Z—04</span><span class="z-cat">INTERIOR CRAFT</span></header>
+              <h3>CABIN<br/>ATELIER</h3>
+              <p>Alcantara, nappa, carbon trim, digital cockpit retrofits and ambient light design — cut, stitched and wired in front of you.</p>
+              <ul class="z-tags"><li>Upholstery</li><li>Trim</li><li>Retrofit</li></ul>
+            </article>
+
+            <article class="zone-card">
+              <header><span class="z-idx">Z—05</span><span class="z-cat">AUDIO · ELECTRONICS</span></header>
+              <h3>SIGNAL<br/>ROOM</h3>
+              <p>Six sealed sound-quality listening rooms, DSP tuning bars, soundproofing cutaways, and dash tech you can actually test.</p>
+              <ul class="z-tags"><li>SQ Audio</li><li>DSP</li><li>Dash Tech</li></ul>
+            </article>
+
+            <article class="zone-card">
+              <header><span class="z-idx">Z—06</span><span class="z-cat">DETAILING · PROTECTION</span></header>
+              <h3>GLOSS<br/>DISTRICT</h3>
+              <p>Ceramic and graphene coating theatre, PPF edge-wrapping masterclasses, and a correction row where swirl marks die in public.</p>
+              <ul class="z-tags"><li>Ceramic</li><li>Correction</li><li>Care</li></ul>
+            </article>
+
+            <article class="zone-card">
+              <header><span class="z-idx">Z—07</span><span class="z-cat">AERO · COMPOSITES</span></header>
+              <h3>CARBON<br/>WORKS</h3>
+              <p>Dry-carbon layup demos, 3D-printed aero prototyping, and weight-versus-downforce talks straight from race engineers.</p>
+              <ul class="z-tags"><li>Dry Carbon</li><li>Aero</li><li>Composites</li></ul>
+            </article>
+
+            <article class="zone-card">
+              <header><span class="z-idx">Z—08</span><span class="z-cat">LEGAL · OWNERSHIP</span></header>
+              <h3>THE PAPER<br/>TRAIL</h3>
+              <p>Mod-legal clinic, inspection rules, insurance and financing desks. The unglamorous part, finally in one place — that’s the one-stop promise.</p>
+              <ul class="z-tags"><li>Legal</li><li>Insurance</li><li>Registration</li></ul>
+            </article>
+
+            <article class="zone-card zone-end">
+              <h3>YOUR BUILD<br/>STARTS HERE</h3>
+              <p>Eight zones, one floor plan, zero excuses.</p>
+              <a href="#tickets" class="btn btn-volt magnetic" data-cursor>GET TICKETS</a>
+            </article>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ PROGRAM ══════════ -->
+    <section class="program" id="program">
+      <div class="sec-head">
+        <p class="sec-label">03 ✱ LIVE PROGRAM</p>
+        <h2 class="sec-title">NOT A SHOWROOM. <span class="outline">A WORKSHOP.</span></h2>
+      </div>
+      <ul class="prog-list">
+        <li class="prog-row">
+          <span class="p-idx">P1</span>
+          <div class="p-body"><h3>BUILDER TALKS</h3><p>Twelve studios tell the story of one build each — budgets, mistakes and all.</p></div>
+          <span class="p-day">OCT 11 + 12</span>
+        </li>
+        <li class="prog-row">
+          <span class="p-idx">P2</span>
+          <div class="p-body"><h3>WRAP BATTLE: LIVE</h3><p>Eight teams, identical panels, ninety minutes. Qualifiers day one, final day two.</p></div>
+          <span class="p-day">OCT 11 + 12</span>
+        </li>
+        <li class="prog-row">
+          <span class="p-idx">P3</span>
+          <div class="p-body"><h3>DYNO ARENA</h3><p>Hourly tuning sessions behind glass, narrated live by the calibrators themselves.</p></div>
+          <span class="p-day">OCT 11 + 12</span>
+        </li>
+        <li class="prog-row">
+          <span class="p-idx">P4</span>
+          <div class="p-body"><h3>SQ SHOOTOUT</h3><p>Blind-judged sound-quality runoff inside the Signal Room. Bring your ears.</p></div>
+          <span class="p-day">OCT 11</span>
+        </li>
+        <li class="prog-row">
+          <span class="p-idx">P5</span>
+          <div class="p-body"><h3>PADDOCK MARKET</h3><p>Swap meet, apparel drops, prints, diecast — and coffee that tastes like race fuel (it doesn’t).</p></div>
+          <span class="p-day">ALL DAYS</span>
+        </li>
+        <li class="prog-row">
+          <span class="p-idx">P6</span>
+          <div class="p-body"><h3>GOLDEN WRENCH AWARDS</h3><p>Builds of the year — voted by visitors and a nine-judge panel of working builders.</p></div>
+          <span class="p-day">OCT 12</span>
+        </li>
+        <li class="prog-row">
+          <span class="p-idx">P7</span>
+          <div class="p-body"><h3>NIGHT SESSION</h3><p>Lights down, music up. The floor stays open late for the closing party.</p></div>
+          <span class="p-day">OCT 12</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ══════════ EXHIBITORS ══════════ -->
+    <section class="exhibitors" id="exhibitors">
+      <div class="sec-head">
+        <p class="sec-label">04 ✱ THE ROSTER</p>
+        <h2 class="sec-title">120+ HANDS <span class="outline">ON DECK.</span></h2>
+      </div>
+
+      <div class="ex-row" data-dir="1">
+        <span class="ex-label">STUDIOS</span>
+        <div class="ex-track">
+          <div class="ex-group">
+            <b>GARAGE NINE</b><i>✱</i><b>FORMOSA WRAP CO.</b><i>✱</i><b>TORQUE HOUSE</b><i>✱</i><b>MOONLINE CUSTOMS</b><i>✱</i><b>PEARL &amp; PIGMENT</b><i>✱</i><b>HENGSHAN AUDIO LAB</b><i>✱</i><b>APEX WERKS</b><i>✱</i><b>STANCE SOCIETY</b><i>✱</i><b>LUMENWORKS</b><i>✱</i><b>DRIFT UNION</b><i>✱</i><b>VELVET GARAGE</b><i>✱</i><b>NORTHGATE COMPOSITES</b><i>✱</i>
+          </div>
+          <div class="ex-group">
+            <b>GARAGE NINE</b><i>✱</i><b>FORMOSA WRAP CO.</b><i>✱</i><b>TORQUE HOUSE</b><i>✱</i><b>MOONLINE CUSTOMS</b><i>✱</i><b>PEARL &amp; PIGMENT</b><i>✱</i><b>HENGSHAN AUDIO LAB</b><i>✱</i><b>APEX WERKS</b><i>✱</i><b>STANCE SOCIETY</b><i>✱</i><b>LUMENWORKS</b><i>✱</i><b>DRIFT UNION</b><i>✱</i><b>VELVET GARAGE</b><i>✱</i><b>NORTHGATE COMPOSITES</b><i>✱</i>
+          </div>
+        </div>
+      </div>
+
+      <div class="ex-row" data-dir="-1">
+        <span class="ex-label">BRANDS</span>
+        <div class="ex-track">
+          <div class="ex-group">
+            <b>KANSHA FORGED</b><i>✱</i><b>VOLTLINE AUDIO</b><i>✱</i><b>AEROFORM</b><i>✱</i><b>CERAMICA PRO</b><i>✱</i><b>AIRHAUS</b><i>✱</i><b>REDCODE ECU</b><i>✱</i><b>CARBONCRAFT</b><i>✱</i><b>GLOWTEC</b><i>✱</i><b>HEXWEAVE PPF</b><i>✱</i><b>N9 LUBRICANTS</b><i>✱</i><b>SHIFTGEAR</b><i>✱</i><b>TARMAC TOOLS</b><i>✱</i>
+          </div>
+          <div class="ex-group">
+            <b>KANSHA FORGED</b><i>✱</i><b>VOLTLINE AUDIO</b><i>✱</i><b>AEROFORM</b><i>✱</i><b>CERAMICA PRO</b><i>✱</i><b>AIRHAUS</b><i>✱</i><b>REDCODE ECU</b><i>✱</i><b>CARBONCRAFT</b><i>✱</i><b>GLOWTEC</b><i>✱</i><b>HEXWEAVE PPF</b><i>✱</i><b>N9 LUBRICANTS</b><i>✱</i><b>SHIFTGEAR</b><i>✱</i><b>TARMAC TOOLS</b><i>✱</i>
+          </div>
+        </div>
+      </div>
+
+      <div class="ex-row" data-dir="1">
+        <span class="ex-label">PARTNERS</span>
+        <div class="ex-track">
+          <div class="ex-group">
+            <b>MOD-LEGAL CLINIC</b><i>✱</i><b>INSUREPLUS MOTOR</b><i>✱</i><b>BUILDER’S BANK</b><i>✱</i><b>RADIO REDLINE</b><i>✱</i><b>PETROLHEAD COFFEE</b><i>✱</i><b>THE FITMENT APP</b><i>✱</i>
+          </div>
+          <div class="ex-group">
+            <b>MOD-LEGAL CLINIC</b><i>✱</i><b>INSUREPLUS MOTOR</b><i>✱</i><b>BUILDER’S BANK</b><i>✱</i><b>RADIO REDLINE</b><i>✱</i><b>PETROLHEAD COFFEE</b><i>✱</i><b>THE FITMENT APP</b><i>✱</i>
+          </div>
+        </div>
+      </div>
+
+      <p class="ex-note">120+ exhibitors confirmed for 2027 — new names announced weekly until doors open.</p>
+    </section>
+
+    <!-- ══════════ SCHEDULE ══════════ -->
+    <section class="schedule" id="schedule">
+      <div class="sec-head">
+        <p class="sec-label">05 ✱ THREE DAYS</p>
+        <h2 class="sec-title">10 · 11 · 12 <span class="outline">OCTOBER 2027</span></h2>
+      </div>
+
+      <div class="day-row">
+        <div class="d-date"><b>10.10</b><span>SUN</span></div>
+        <div class="d-info">
+          <h3>MEDIA &amp; INDUSTRY DAY <em class="chip">ACCREDITATION ONLY</em></h3>
+          <p>Press conference, brand reveals and B2B matchmaking, one day before the public floods in.</p>
+          <ul class="d-times">
+            <li><b>09:00</b>Press &amp; trade check-in</li>
+            <li><b>10:00</b>Opening ceremony &amp; keynote</li>
+            <li><b>11:30</b>Brand reveals — Chroma Lab stage</li>
+            <li><b>14:00</b>B2B matchmaking sessions</li>
+            <li><b>16:00</b>Guided builder preview tours</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="day-row">
+        <div class="d-date"><b>10.11</b><span>MON</span></div>
+        <div class="d-info">
+          <h3>PUBLIC DAY 01 <em class="chip chip-volt">NATIONAL HOLIDAY (OBSERVED)</em></h3>
+          <p>All eight zones open. First sessions of every live format.</p>
+          <ul class="d-times">
+            <li><b>10:00</b>Doors open</li>
+            <li><b>11:00</b>Builder Talks — session one</li>
+            <li><b>13:00</b>Wrap Battle: qualifiers</li>
+            <li><b>15:00</b>Dyno Arena sessions</li>
+            <li><b>17:00</b>SQ Shootout — Signal Room</li>
+            <li><b>18:00</b>Doors close</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="day-row">
+        <div class="d-date"><b>10.12</b><span>TUE</span></div>
+        <div class="d-info">
+          <h3>PUBLIC DAY 02 <em class="chip chip-volt">FINALS &amp; AWARDS</em></h3>
+          <p>Finals, awards, and a closing night session on the show floor.</p>
+          <ul class="d-times">
+            <li><b>10:00</b>Doors open</li>
+            <li><b>11:00</b>Builder Talks — session two</li>
+            <li><b>13:00</b>Wrap Battle: final</li>
+            <li><b>15:30</b>Golden Wrench Awards</li>
+            <li><b>17:00</b>Night Session begins</li>
+            <li><b>20:00</b>Doors close</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ TICKETS ══════════ -->
+    <section class="tickets" id="tickets">
+      <div class="sec-head">
+        <p class="sec-label">06 ✱ ENTRY</p>
+        <h2 class="sec-title">FROM NT$300. <span class="outline">HONESTLY PRICED.</span></h2>
+      </div>
+
+      <div class="tk-grid">
+        <article class="tk-card">
+          <header><span class="tk-tier">EARLY BIRD</span><span class="tk-wave">WAVE 1 · 3,000 PCS</span></header>
+          <div class="tk-price"><i>NT$</i>300</div>
+          <p class="tk-per">/ one public day (Oct 11 or 12)</p>
+          <ul class="tk-feat">
+            <li>All eight zones</li>
+            <li>All talks &amp; live demos</li>
+            <li>Paddock Market access</li>
+          </ul>
+          <button class="btn btn-ghost tk-buy magnetic" data-cursor>BUY — WAVE 1</button>
+        </article>
+
+        <article class="tk-card">
+          <header><span class="tk-tier">STANDARD</span><span class="tk-wave">SINGLE DAY</span></header>
+          <div class="tk-price"><i>NT$</i>450</div>
+          <p class="tk-per">/ one public day (Oct 11 or 12)</p>
+          <ul class="tk-feat">
+            <li>All eight zones</li>
+            <li>All talks &amp; live demos</li>
+            <li>Same-day re-entry</li>
+          </ul>
+          <button class="btn btn-ghost tk-buy magnetic" data-cursor>BUY STANDARD</button>
+        </article>
+
+        <article class="tk-card">
+          <header><span class="tk-tier">TWO-DAY PASS</span><span class="tk-wave">OCT 11 + 12</span></header>
+          <div class="tk-price"><i>NT$</i>690</div>
+          <p class="tk-per">/ both public days</p>
+          <ul class="tk-feat">
+            <li>Everything in Standard</li>
+            <li>Both finals + awards night</li>
+            <li>Limited-run event print</li>
+          </ul>
+          <button class="btn btn-ghost tk-buy magnetic" data-cursor>BUY TWO-DAY</button>
+        </article>
+
+        <article class="tk-card tk-vip">
+          <header><span class="tk-tier">VIP ALL-ACCESS</span><span class="tk-wave">ALL 3 DAYS</span></header>
+          <div class="tk-price"><i>NT$</i>1290</div>
+          <p class="tk-per">/ incl. Media Day · Oct 10—12</p>
+          <ul class="tk-feat">
+            <li>Media Day floor access</li>
+            <li>VIP lounge + fast-track entry</li>
+            <li>Welcome kit &amp; guided floor tour</li>
+            <li>Priority seats, all live formats</li>
+          </ul>
+          <button class="btn btn-dark tk-buy magnetic" data-cursor>BUY VIP</button>
+        </article>
+      </div>
+
+      <p class="tk-note">Kids under 12 enter free with a ticketed adult ✱ Media Day (Oct 10) is accreditation &amp; VIP only ✱ All prices in NTD, incl. tax</p>
+    </section>
+
+    <!-- ══════════ VENUE ══════════ -->
+    <section class="venue" id="venue">
+      <div class="sec-head">
+        <p class="sec-label">07 ✱ WHERE</p>
+      </div>
+      <h2 class="venue-title"><span>TAINEX</span><span class="outline">HALL 1</span></h2>
+      <div class="venue-grid">
+        <div class="v-block">
+          <h4>ADDRESS</h4>
+          <p>Taipei Nangang Exhibition Center, Hall 1<br/>No. 1, Jingmao 2nd Rd, Nangang District<br/>Taipei 115, Taiwan</p>
+        </div>
+        <div class="v-block">
+          <h4>GETTING THERE</h4>
+          <p>MRT Blue / Brown Line — Taipei Nangang Exhibition Center Station, exits 1 &amp; 2 connect directly into the hall. HSR &amp; TRA Nangang Station, 10 min walk.</p>
+        </div>
+        <div class="v-block">
+          <h4>HOURS</h4>
+          <p>Oct 10 — media &amp; trade, by accreditation<br/>Oct 11 — 10:00–18:00<br/>Oct 12 — 10:00–20:00 (Night Session)</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ FOOTER ══════════ -->
+    <footer id="contact">
+      <p class="foot-kicker">OCT 10—12, 2027 ✱ TAINEX 1, TAIPEI</p>
+      <h2 class="foot-title"><span>SEE YOU AT</span><span class="outline">THE SALON</span></h2>
+      <form class="signup" novalidate>
+        <input type="email" placeholder="your@email.com" aria-label="Email address" required />
+        <button type="submit" class="btn btn-volt magnetic" data-cursor>NOTIFY ME</button>
+      </form>
+      <p class="signup-note">Ticket waves, exhibitor drops, program updates. No spam — we’re busy building.</p>
+      <div class="foot-bottom">
+        <span>© 2027 CARGO SALON</span>
+        <nav class="foot-socials" aria-label="Social">
+          <a href="#" data-cursor>IG</a><a href="#" data-cursor>YT</a><a href="#" data-cursor>THREADS</a><a href="#" data-cursor>LINE</a>
+        </nav>
+        <span class="foot-credit">Built with GSAP × Three.js — no cars were photographed for this site.</span>
+      </div>
+    </footer>
+
+  </main>
+
+  <div class="toast" role="status" aria-live="polite"></div>
+
+  <!-- ══════════ SCRIPTS ══════════ -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.4/dist/lenis.min.js"></script>
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js" } }
+  </script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
