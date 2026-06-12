@@ -65,14 +65,21 @@ function initThree() {
       return 42.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
     }`;
 
+  /* paint-booth panorama reflected on the alloy surface */
+  const envTex = new THREE.TextureLoader().load('assets/img/booth-env.jpg');
+  envTex.colorSpace = THREE.SRGBColorSpace;
+
   const orbMat = new THREE.ShaderMaterial({
     uniforms: {
       uTime: { value: 0 },
       uAmp: { value: 0.22 },
+      uEnv: { value: envTex },
+      uEnvI: { value: 0.9 },
     },
     vertexShader: `
       uniform float uTime; uniform float uAmp;
       varying vec3 vN; varying vec3 vV; varying float vD;
+      varying vec3 vWN; varying vec3 vWP;
       ${NOISE}
       void main(){
         float n1 = snoise(normal * 1.6 + uTime * 0.18);
@@ -81,12 +88,18 @@ function initThree() {
         vD = d;
         vec3 p = position + normal * d;
         vN = normalize(normalMatrix * normal);
+        vWN = normalize(mat3(modelMatrix) * normal);
+        vWP = (modelMatrix * vec4(p, 1.0)).xyz;
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
         vV = -mv.xyz;
         gl_Position = projectionMatrix * mv;
       }`,
     fragmentShader: `
+      uniform float uTime;
+      uniform sampler2D uEnv;
+      uniform float uEnvI;
       varying vec3 vN; varying vec3 vV; varying float vD;
+      varying vec3 vWN; varying vec3 vWP;
       void main(){
         vec3 N = normalize(vN);
         vec3 V = normalize(vV);
@@ -99,6 +112,17 @@ function initThree() {
         vec3 L = normalize(vec3(0.6, 0.8, 0.5));
         float spec = pow(max(dot(reflect(-L, N), V), 0.0), 26.0);
         col += vec3(1.0) * spec * 0.22;
+
+        // sample the booth panorama along the world-space reflection vector;
+        // surface noise (vD) warps the lookup so the LED strips smear like wet paint
+        vec3 Vw = normalize(cameraPosition - vWP);
+        vec3 R = reflect(-Vw, normalize(vWN));
+        float eu = fract(atan(R.z, R.x) / 6.2831853 + 0.5 + uTime * 0.012 + vD * 0.35);
+        float ev = clamp(0.5 + asin(clamp(R.y, -1.0, 1.0)) / 3.14159265 + vD * 0.2, 0.02, 0.98);
+        vec3 env = texture2D(uEnv, vec2(eu, ev)).rgb;
+        env *= env; // keep the booth's darks dark, let the light strips bloom
+        col += env * (0.25 + 0.75 * fres) * uEnvI;
+
         gl_FragColor = vec4(col, 1.0);
       }`,
   });
