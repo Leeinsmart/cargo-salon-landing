@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOTIVIBES 工作管理中心</title>
+<style>
+  :root{
+    --bg:#0d0f14; --bg2:#13161d; --panel:#1a1e27; --panel2:#222734;
+    --line:#2c3342; --text:#e8eaf0; --muted:#8b93a7; --dim:#7d859b;
+    --accent:#5b8cff; --accent2:#7aa2ff;
+    --ok:#3ecf8e; --warn:#f5b352; --danger:#f06a6a;
+    --c-cargo:#f5b352; --c-web:#4fd2e8; --c-fe:#b07aff; --c-radar:#3ecf8e; --c-research:#ff7ab8; --c-misc:#8b93a7;
+    --radius:12px;
+    --font:"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.6}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input,select,textarea{font-family:inherit;font-size:14px;color:var(--text);background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;outline:none}
+  input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+  ::placeholder{color:var(--dim)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  /* ===== layout ===== */
+  .app{max-width:1280px;margin:0 auto;padding:20px 24px 80px}
+  header.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:6px 0 18px}
+  .brand{display:flex;flex-direction:column}
+  .brand h1{font-size:20px;font-weight:700;letter-spacing:.5px}
+  .brand h1 span{color:var(--accent)}
+  .brand .date{font-size:12px;color:var(--muted)}
+  .top-actions{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  #searchBox{width:200px}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:14px;font-weight:500;border:1px solid var(--line);background:var(--panel);transition:background .15s,border-color .15s}
+  .btn:hover{background:var(--panel2);border-color:var(--accent)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.primary:hover{background:var(--accent2)}
+  .btn.small{padding:4px 10px;font-size:12.5px;border-radius:6px}
+  .btn.danger:hover{border-color:var(--danger);color:var(--danger)}
+
+  nav.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px;overflow-x:auto}
+  nav.tabs button{padding:10px 18px;font-size:14.5px;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+  nav.tabs button:hover{color:var(--text)}
+  nav.tabs button.active{color:var(--text);border-bottom-color:var(--accent);font-weight:600}
+  nav.tabs button .count{display:inline-block;min-width:20px;padding:0 6px;margin-left:6px;border-radius:10px;background:var(--panel2);font-size:11.5px;color:var(--muted)}
+
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+  .chip{padding:5px 12px;border-radius:999px;border:1px solid var(--line);font-size:13px;color:var(--muted);background:var(--panel)}
+  .chip:hover{border-color:var(--accent);color:var(--text)}
+  .chip.active{color:#0d0f14;font-weight:600}
+  .chip .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+
+  /* ===== dashboard ===== */
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+  .stat .num{font-size:30px;font-weight:700;line-height:1.2}
+  .stat .lbl{font-size:13px;color:var(--muted)}
+  .stat.alert .num{color:var(--danger)}
+  .stat.warn .num{color:var(--warn)}
+  .stat.ok .num{color:var(--ok)}
+  .dash-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:860px){.dash-cols{grid-template-columns:1fr}}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+  .panel h3{font-size:14.5px;font-weight:600;margin-bottom:12px;color:var(--text);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .panel h3 .hint{font-weight:400;font-size:12px;color:var(--dim);margin-left:auto;white-space:nowrap}
+  .mini-list{display:flex;flex-direction:column;gap:8px}
+  .mini-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg2);border:1px solid var(--line);border-radius:8px;font-size:13.5px;width:100%;text-align:left;cursor:pointer}
+  .mini-item:hover{border-color:var(--accent)}
+  .mini-item .grow{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mini-item .due{font-size:12px;color:var(--muted);white-space:nowrap}
+  .mini-item .due.over{color:var(--danger);font-weight:600}
+  .mini-item .due.today{color:var(--warn);font-weight:600}
+  .empty{color:var(--dim);font-size:13px;padding:10px 4px}
+  .stream-bar{display:flex;flex-direction:column;gap:10px}
+  .stream-row{display:flex;align-items:center;gap:10px;font-size:13.5px}
+  .stream-row .name{width:120px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .stream-row .bar{flex:1;height:8px;border-radius:4px;background:var(--bg2);overflow:hidden}
+  .stream-row .bar i{display:block;height:100%;border-radius:4px}
+  .stream-row .nums{width:64px;text-align:right;font-size:12px;color:var(--muted);flex-shrink:0}
+
+  /* ===== board ===== */
+  .board{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:start}
+  @media(max-width:860px){.board{grid-template-columns:1fr}}
+  .col{background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius);padding:12px;min-height:200px}
+  .col.dragover{border-color:var(--accent);background:rgba(91,140,255,.06)}
+  .col-head{display:flex;align-items:center;gap:8px;padding:2px 4px 12px;font-weight:600;font-size:14px}
+  .col-head .count{color:var(--muted);font-weight:400;font-size:12.5px}
+  .col-head .dot{width:9px;height:9px;border-radius:50%}
+  .cards{display:flex;flex-direction:column;gap:10px;min-height:60px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:grab;border-left:3px solid var(--c-misc);transition:border-color .15s}
+  .card:hover{border-color:var(--accent);border-left-width:3px}
+  .card.dragging{opacity:.45}
+  .card .title{font-size:14px;font-weight:550;line-height:1.45;word-break:break-word}
+  .card .title.done-text{text-decoration:line-through;color:var(--muted)}
+  .card .meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--muted)}
+  .tag{padding:1px 8px;border-radius:999px;font-size:11.5px;border:1px solid var(--line);background:var(--bg2)}
+  .pri{font-weight:600}
+  .pri.high{color:var(--danger)} .pri.mid{color:var(--warn)} .pri.low{color:var(--muted)}
+  .card .due-tag{margin-left:auto}
+  .card .due-tag.over{color:var(--danger);font-weight:600}
+  .card .due-tag.today{color:var(--warn);font-weight:600}
+  .card .ops{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+  .card .ops button{font-size:12px;color:var(--muted);padding:3px 8px;border-radius:6px;border:1px solid transparent}
+  .card .ops button:hover{border-color:var(--line);color:var(--text);background:var(--bg2)}
+  .card .notes-preview{margin-top:6px;font-size:12.5px;color:var(--muted);white-space:pre-wrap;word-break:break-word;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+  /* ===== workflows ===== */
+  .wf-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+  @media(max-width:860px){.wf-grid{grid-template-columns:1fr}}
+  .wf-steps{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+  .wf-step{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg2);border:1px solid var(--line);border-radius:8px;cursor:pointer;user-select:none}
+  .wf-step:hover{border-color:var(--accent)}
+  .wf-step .box{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--dim);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;color:#0d0f14}
+  .wf-step.done .box{background:var(--ok);border-color:var(--ok)}
+  .wf-step.done .lbl{color:var(--muted);text-decoration:line-through}
+  .wf-step .lbl{font-size:13.5px}
+  .wf-step .skill{margin-left:auto;font-size:11px;color:var(--dim);font-family:ui-monospace,monospace}
+  .wf-meta{font-size:12px;color:var(--muted);margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .wf-progress{height:6px;border-radius:3px;background:var(--bg2);overflow:hidden;margin-top:12px}
+  .wf-progress i{display:block;height:100%;background:var(--ok);border-radius:3px;transition:width .25s}
+
+  .pipe-item{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+  .pipe-item .head{display:flex;align-items:center;gap:10px}
+  .pipe-item .head .topic{font-weight:550;font-size:14px;flex:1;word-break:break-word}
+  .pipe-stages{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+  .pipe-stage{flex:1;min-width:90px;text-align:center;padding:6px 4px;border-radius:7px;border:1px solid var(--line);font-size:12px;color:var(--dim);cursor:pointer;background:var(--panel)}
+  .pipe-stage:hover{border-color:var(--accent);color:var(--text)}
+  .pipe-stage.done{background:rgba(62,207,142,.14);border-color:var(--ok);color:var(--ok)}
+  .pipe-stage.current{border-color:var(--warn);color:var(--warn)}
+  .add-row{display:flex;gap:8px;margin-top:12px}
+  .add-row input{flex:1}
+
+  /* ===== notes ===== */
+  .note-input{display:flex;gap:8px;margin-bottom:16px}
+  .note-input textarea{flex:1;min-height:64px;resize:vertical}
+  .note{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+  .note .body{white-space:pre-wrap;word-break:break-word;font-size:14px}
+  .note .foot{display:flex;align-items:center;gap:10px;margin-top:8px;font-size:12px;color:var(--dim)}
+  .note .foot button{color:var(--dim);font-size:12px}
+  .note .foot button:hover{color:var(--danger)}
+
+  /* ===== modal ===== */
+  dialog{border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--text);padding:0;width:min(520px,92vw)}
+  dialog::backdrop{background:rgba(0,0,0,.55)}
+  .modal-body{padding:22px 24px}
+  .modal-body h3{font-size:16px;margin-bottom:16px}
+  .form-grid{display:flex;flex-direction:column;gap:12px}
+  .form-grid label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:4px}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .form-grid input,.form-grid select,.form-grid textarea{width:100%}
+  .modal-foot{display:flex;justify-content:space-between;gap:8px;margin-top:20px}
+  .modal-foot .right{display:flex;gap:8px;margin-left:auto}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--line);padding:10px 18px;border-radius:10px;font-size:13.5px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:99}
+  .toast.show{opacity:1}
+  .view{display:none}
+  .view.active{display:block}
+  footer.app-foot{margin-top:36px;font-size:12px;color:var(--dim);text-align:center}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <h1>MOTIVIBES <span>工作管理中心</span></h1>
+      <div class="date" id="todayLabel"></div>
+    </div>
+    <div class="top-actions">
+      <input type="search" id="searchBox" placeholder="搜尋任務、筆記…" aria-label="搜尋任務與筆記">
+      <button class="btn" id="exportBtn" title="下載 JSON 備份">匯出</button>
+      <button class="btn" id="importBtn" title="從 JSON 備份還原">匯入</button>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+      <button class="btn primary" id="newTaskBtn">＋ 新增任務</button>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs" aria-label="檢視切換">
+    <button data-view="dash" class="active" aria-current="true">總覽</button>
+    <button data-view="board" aria-current="false">任務看板<span class="count" id="boardCount"></span></button>
+    <button data-view="flows" aria-current="false">週期流程</button>
+    <button data-view="notes" aria-current="false">快速筆記<span class="count" id="noteCount"></span></button>
+  </nav>
+
+  <div class="filters" id="streamFilters"></div>
+
+  <!-- 總覽 -->
+  <section class="view active" id="view-dash">
+    <div class="stat-grid" id="statGrid"></div>
+    <div class="dash-cols">
+      <div class="panel">
+        <h3>⚠️ 逾期與今日到期 <span class="hint">點擊可開啟編輯</span></h3>
+        <div class="mini-list" id="dueList"></div>
+      </div>
+      <div class="panel">
+        <h3>📂 各工作線進度 <span class="hint">完成 / 全部</span></h3>
+        <div class="stream-bar" id="streamBars"></div>
+      </div>
+      <div class="panel">
+        <h3>🔜 接下來 7 天</h3>
+        <div class="mini-list" id="weekList"></div>
+      </div>
+      <div class="panel">
+        <h3>✅ 最近完成</h3>
+        <div class="mini-list" id="doneList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 看板 -->
+  <section class="view" id="view-board">
+    <div class="board" id="board"></div>
+  </section>
+
+  <!-- 週期流程 -->
+  <section class="view" id="view-flows">
+    <div class="wf-grid">
+      <div class="panel" id="radarPanel"></div>
+      <div class="panel">
+        <h3>🔬 研究管線 <span class="hint">題目拆解 → DR → 筆記 → Brief</span></h3>
+        <div id="pipeList"></div>
+        <div class="add-row">
+          <input id="pipeInput" placeholder="新增研究題目，例如：2027 改裝車市場規模" aria-label="新增研究題目">
+          <button class="btn" id="pipeAdd">新增</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 筆記 -->
+  <section class="view" id="view-notes">
+    <div class="note-input">
+      <textarea id="noteText" placeholder="快速記下想法、會議重點、待查事項…（Cmd/Ctrl+Enter 送出）" aria-label="快速筆記內容"></textarea>
+      <button class="btn primary" id="noteAdd">記下</button>
+    </div>
+    <div id="noteList"></div>
+  </section>
+
+  <footer class="app-foot">資料儲存在這台裝置的瀏覽器（localStorage）。換裝置前請先「匯出」備份。</footer>
+</div>
+
+<!-- 任務編輯 modal -->
+<dialog id="taskModal" aria-labelledby="modalTitle">
+  <form class="modal-body" id="taskForm" method="dialog">
+    <h3 id="modalTitle">新增任務</h3>
+    <div class="form-grid">
+      <div><label for="fTitle">標題 *</label><input id="fTitle" required maxlength="200"></div>
+      <div class="form-row">
+        <div><label for="fStream">工作線</label><select id="fStream"></select></div>
+        <div><label for="fStatus">狀態</label>
+          <select id="fStatus">
+            <option value="todo">待辦</option>
+            <option value="doing">進行中</option>
+            <option value="done">完成</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div><label for="fPri">優先順序</label>
+          <select id="fPri">
+            <option value="high">高</option>
+            <option value="mid" selected>中</option>
+            <option value="low">低</option>
+          </select>
+        </div>
+        <div><label for="fDue">到期日</label><input type="date" id="fDue"></div>
+      </div>
+      <div><label for="fNotes">備註</label><textarea id="fNotes" rows="3" maxlength="2000"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn danger" id="fDelete" hidden>刪除</button>
+      <div class="right">
+        <button type="button" class="btn" id="fCancel">取消</button>
+        <button type="submit" class="btn primary" id="fSave">儲存</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+/* ============================================================
+   MOTIVIBES 工作管理中心 — 單檔、零依賴、localStorage 持久化
+   ============================================================ */
+const LS_KEY = 'motivibes.workhub.v1';
+
+const STREAMS = [
+  { id:'cargo',    name:'CarGo 車展',   color:'var(--c-cargo)' },
+  { id:'web',      name:'CarGo 官網',   color:'var(--c-web)' },
+  { id:'fe',       name:'Formula E',    color:'var(--c-fe)' },
+  { id:'radar',    name:'市場雷達',     color:'var(--c-radar)' },
+  { id:'research', name:'研究流程',     color:'var(--c-research)' },
+  { id:'misc',     name:'其他',         color:'var(--c-misc)' },
+];
+const STREAM_MAP = Object.fromEntries(STREAMS.map(s => [s.id, s]));
+const STATUS = [
+  { id:'todo',  name:'待辦',   color:'var(--muted)' },
+  { id:'doing', name:'進行中', color:'var(--warn)' },
+  { id:'done',  name:'完成',   color:'var(--ok)' },
+];
+const STATUS_IDS = STATUS.map(s => s.id);
+const PRI_IDS = ['high', 'mid', 'low'];
+const PRI_NAME = { high:'高', mid:'中', low:'低' };
+
+const RADAR_STEPS = [
+  { id:'monitor',  lbl:'環境掃描：匯率（JPY/TWD/USD）與法規、檢疫變動', skill:'radar-monitor' },
+  { id:'scout',    lbl:'數據收集：官方貿易統計（台灣海關、e-Stat、USDA）', skill:'radar-data-scout' },
+  { id:'check',    lbl:'可行性查核：檢疫規定、HS code、關稅', skill:'radar-trade-check' },
+  { id:'logi',     lbl:'物流評估：航線、冷鏈、運費、時程', skill:'radar-logistics' },
+  { id:'opp',      lbl:'商機評分：六層框架排序，產出 shortlist', skill:'radar-opportunity' },
+  { id:'report',   lbl:'週報產出：雷達週報與談判文件', skill:'radar-report' },
+];
+const PIPE_STAGES = [
+  { id:'brief',  lbl:'題目拆解' },
+  { id:'dr',     lbl:'Deep Research' },
+  { id:'notes',  lbl:'筆記萃取' },
+  { id:'synth',  lbl:'綜合 Brief' },
+];
+
+/* ---------- 工具 ---------- */
+const $  = sel => document.querySelector(sel);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const todayStr = () => {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+};
+const isIsoDate = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(new Date(s + 'T00:00:00'));
+const fmtDate = iso => {           // '2026-06-13' → '6/13'
+  if (!isIsoDate(iso)) return '';
+  const [, m, d] = iso.split('-');
+  return `${+m}/${+d}`;
+};
+const fmtDateFull = iso => {       // '2026-06-13' → '2026/6/13'
+  if (!isIsoDate(iso)) return '';
+  const [y, m, d] = iso.split('-');
+  return `${y}/${+m}/${+d}`;
+};
+const daysFromToday = iso => {
+  if (!isIsoDate(iso)) return null;
+  const t = new Date(todayStr() + 'T00:00:00');
+  const d = new Date(iso + 'T00:00:00');
+  return Math.round((d - t) / 86400000);
+};
+
+/* ---------- 預設資料（依據實際工作預載，可自由刪改） ---------- */
+function seedState() {
+  const now = new Date().toISOString();
+  const mk = (title, stream, status, pri, due, notes) =>
+    ({ id: uid(), title, stream, status, pri, due: due || '', notes: notes || '', createdAt: now, doneAt: status === 'done' ? now : null });
+  return {
+    version: 1,
+    tasks: [
+      mk('CarGo 官網中文版（EN/中 切換目前未接內容）', 'web', 'todo', 'high', '', '英文版已上線；nav 的 EN/中 toggle 還沒有對應的中文內容。'),
+      mk('CG 桃展館合作談判：整理條件與下一步', 'cargo', 'doing', 'high', '', ''),
+      mk('CarGo BP（給 Anyi）修訂與寄出', 'cargo', 'doing', 'high', '', ''),
+      mk('投資人 Q&A：異議回應清單定稿', 'cargo', 'todo', 'mid', '', '對應 investor objections 討論結果。'),
+      mk('三年財務模型：依最新票價假設更新', 'cargo', 'todo', 'mid', '', '票價 NT$300 / 450 / 690 / 1290（VIP 含媒體日）。'),
+      mk('台南 Formula E 可行性：研究整合與結論', 'fe', 'todo', 'mid', '', '整合 S14 研究、東京案例、場地與定價分析。'),
+      mk('市場雷達：本週掃描與週報', 'radar', 'todo', 'high', '2026-06-13', '依「週期流程」分頁的六步驟執行。'),
+      mk('雷達系統優化器：雙週健檢', 'radar', 'todo', 'low', '2026-06-15', '上次執行 2026/6/1。'),
+      mk('CarGo Salon 形象官網上線（GSAP × Three.js）', 'web', 'done', 'high', '', '英文版，無車輛影像，液態合金 3D 球。'),
+    ],
+    notes: [
+      { id: uid(), text: '範例：點右上「匯出」可下載 JSON 備份；「匯入」可在其他裝置還原。', createdAt: now },
+    ],
+    radar: { week: '', steps: {}, lastDone: '' },
+    pipes: [
+      { id: uid(), topic: 'CarGo 車展：台灣改裝車市場規模與客群', stages: { brief:true, dr:true, notes:true, synth:false } },
+      { id: uid(), topic: '台南 Formula E 落地可行性', stages: { brief:true, dr:true, notes:false, synth:false } },
+    ],
+  };
+}
+
+/* ---------- 正規化：載入與匯入共用，杜絕缺欄位 / 惡意欄位 ---------- */
+const safeId = v => (typeof v === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(v)) ? v : uid();
+function normalizeState(s) {
+  const out = { version: 1, tasks: [], notes: [], radar: { week:'', steps:{}, lastDone:'' }, pipes: [] };
+  if (Array.isArray(s.tasks)) {
+    out.tasks = s.tasks
+      .filter(t => t && typeof t === 'object')
+      .map(t => ({
+        id: safeId(t.id),
+        title: String(t.title ?? '').slice(0, 200),
+        stream: STREAM_MAP[t.stream] ? t.stream : 'misc',
+        status: STATUS_IDS.includes(t.status) ? t.status : 'todo',
+        pri: PRI_IDS.includes(t.pri) ? t.pri : 'mid',
+        due: isIsoDate(t.due) ? t.due : '',
+        notes: String(t.notes ?? '').slice(0, 2000),
+        createdAt: typeof t.createdAt === 'string' ? t.createdAt : '',
+        doneAt: typeof t.doneAt === 'string' ? t.doneAt : null,
+      }))
+      .filter(t => t.title.trim());
+  }
+  if (Array.isArray(s.notes)) {
+    out.notes = s.notes
+      .filter(n => n && typeof n === 'object' && String(n.text ?? '').trim())
+      .map(n => ({ id: safeId(n.id), text: String(n.text), createdAt: typeof n.createdAt === 'string' ? n.createdAt : '' }));
+  }
+  if (Array.isArray(s.pipes)) {
+    out.pipes = s.pipes
+      .filter(p => p && typeof p === 'object' && String(p.topic ?? '').trim())
+      .map(p => {
+        const stages = {};
+        if (p.stages && typeof p.stages === 'object') {
+          for (const st of PIPE_STAGES) stages[st.id] = !!p.stages[st.id];
+        }
+        return { id: safeId(p.id), topic: String(p.topic).slice(0, 200), stages };
+      });
+  }
+  if (s.radar && typeof s.radar === 'object') {
+    out.radar.week = typeof s.radar.week === 'string' ? s.radar.week : '';
+    out.radar.lastDone = typeof s.radar.lastDone === 'string' ? s.radar.lastDone : '';
+    if (s.radar.steps && typeof s.radar.steps === 'object') {
+      for (const st of RADAR_STEPS) out.radar.steps[st.id] = !!s.radar.steps[st.id];
+    }
+  }
+  return out;
+}
+
+/* ---------- 狀態存取 ---------- */
+let state = loadState();
+function loadState() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return seedState();
+    const s = JSON.parse(raw);
+    if (!s || typeof s !== 'object' || !Array.isArray(s.tasks)) return seedState();
+    return normalizeState(s);
+  } catch { return seedState(); }
+}
+function save() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+  catch (e) { toast('儲存失敗：' + e.message); }
+}
+
+/* ---------- UI 全域狀態 ---------- */
+let activeView = 'dash';
+let activeStream = 'all';
+let searchTerm = '';
+let editingId = null;
+
+/* ---------- 渲染 ---------- */
+function render() {
+  renderTabs();
+  renderFilters();
+  renderDash();
+  renderBoard();
+  renderFlows();
+  renderNotes();
+}
+
+function renderTabs() {
+  $$('#tabs button').forEach(b => {
+    const active = b.dataset.view === activeView;
+    b.classList.toggle('active', active);
+    b.setAttribute('aria-current', active ? 'true' : 'false');
+  });
+  $$('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + activeView));
+  const open = state.tasks.filter(t => t.status !== 'done').length;
+  $('#boardCount').textContent = open;
+  $('#noteCount').textContent = state.notes.length;
+  // 篩選列只在總覽/看板有意義
+  $('#streamFilters').style.display = (activeView === 'dash' || activeView === 'board') ? 'flex' : 'none';
+}
+
+function renderFilters() {
+  const wrap = $('#streamFilters');
+  const chips = [{ id:'all', name:'全部', color:'var(--accent)' }, ...STREAMS];
+  wrap.innerHTML = chips.map(s => {
+    const active = activeStream === s.id;
+    const style = active ? `style="background:${s.color};border-color:${s.color}"` : '';
+    const dot = s.id === 'all' ? '' : `<span class="dot" style="background:${s.color}"></span>`;
+    return `<button class="chip ${active?'active':''}" data-stream="${esc(s.id)}" aria-pressed="${active}" ${style}>${dot}${esc(s.name)}</button>`;
+  }).join('');
+}
+
+function visibleTasks() {
+  return state.tasks.filter(t => {
+    if (activeStream !== 'all' && t.stream !== activeStream) return false;
+    if (searchTerm) {
+      const q = searchTerm.toLowerCase();
+      if (!(t.title + ' ' + (t.notes || '')).toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function renderDash() {
+  const tasks = visibleTasks();
+  const open = tasks.filter(t => t.status !== 'done');
+  const overdue = open.filter(t => t.due && daysFromToday(t.due) < 0);
+  const today = open.filter(t => t.due && daysFromToday(t.due) === 0);
+  const doing = tasks.filter(t => t.status === 'doing');
+
+  $('#statGrid').innerHTML = `
+    <div class="stat"><div class="num">${open.length}</div><div class="lbl">未完成任務</div></div>
+    <div class="stat warn"><div class="num">${doing.length}</div><div class="lbl">進行中</div></div>
+    <div class="stat ${overdue.length ? 'alert' : ''}"><div class="num">${overdue.length}</div><div class="lbl">逾期</div></div>
+    <div class="stat ${today.length ? 'warn' : 'ok'}"><div class="num">${today.length}</div><div class="lbl">今日到期</div></div>`;
+
+  const dueItems = [...overdue, ...today].sort((a,b) => (a.due||'').localeCompare(b.due||''));
+  $('#dueList').innerHTML = dueItems.length
+    ? dueItems.map(miniItem).join('')
+    : '<div class="empty">沒有逾期或今日到期的任務 🎉</div>';
+
+  const week = open
+    .filter(t => { const d = daysFromToday(t.due); return d !== null && d > 0 && d <= 7; })
+    .sort((a,b) => a.due.localeCompare(b.due));
+  $('#weekList').innerHTML = week.length ? week.map(miniItem).join('') : '<div class="empty">未來 7 天沒有到期任務</div>';
+
+  const done = tasks.filter(t => t.status === 'done')
+    .sort((a,b) => (b.doneAt||'').localeCompare(a.doneAt||'')).slice(0,5);
+  $('#doneList').innerHTML = done.length ? done.map(miniItem).join('') : '<div class="empty">還沒有完成的任務</div>';
+
+  $('#streamBars').innerHTML = STREAMS.map(s => {
+    const all = state.tasks.filter(t => t.stream === s.id);
+    if (!all.length) return '';
+    const doneN = all.filter(t => t.status === 'done').length;
+    const pct = Math.round(doneN / all.length * 100);
+    return `<div class="stream-row">
+      <span class="name"><span class="dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${s.color};margin-right:6px;vertical-align:1px"></span>${esc(s.name)}</span>
+      <span class="bar"><i style="width:${pct}%;background:${s.color}"></i></span>
+      <span class="nums">${doneN} / ${all.length}</span>
+    </div>`;
+  }).join('') || '<div class="empty">尚無任務</div>';
+}
+
+function miniItem(t) {
+  const d = daysFromToday(t.due);
+  let dueCls = '', dueTxt = t.due ? fmtDate(t.due) : '';
+  if (t.status !== 'done') {
+    if (d !== null && d < 0) { dueCls = 'over'; dueTxt = `逾期 ${-d} 天`; }
+    else if (d === 0) { dueCls = 'today'; dueTxt = '今天'; }
+  }
+  const s = STREAM_MAP[t.stream] || STREAM_MAP.misc;
+  return `<button type="button" class="mini-item" data-edit="${esc(t.id)}">
+    <span class="dot" style="width:8px;height:8px;border-radius:50%;background:${s.color};flex-shrink:0"></span>
+    <span class="grow">${esc(t.title)}</span>
+    ${dueTxt ? `<span class="due ${dueCls}">${esc(dueTxt)}</span>` : ''}
+  </button>`;
+}
+
+function renderBoard() {
+  const tasks = visibleTasks();
+  $('#board').innerHTML = STATUS.map(col => {
+    const list = tasks.filter(t => t.status === col.id)
+      .sort((a,b) => priRank(a) - priRank(b) || (a.due||'9999').localeCompare(b.due||'9999'));
+    return `<div class="col" data-col="${col.id}">
+      <div class="col-head"><span class="dot" style="background:${col.color}"></span>${col.name}
+        <span class="count">${list.length}</span></div>
+      <div class="cards">${list.map(cardHtml).join('')}</div>
+    </div>`;
+  }).join('');
+}
+const priRank = t => ({ high:0, mid:1, low:2 }[t.pri] ?? 1);
+
+function cardHtml(t) {
+  const s = STREAM_MAP[t.stream] || STREAM_MAP.misc;
+  const d = daysFromToday(t.due);
+  let dueCls = '', dueTxt = t.due ? '📅 ' + fmtDate(t.due) : '';
+  if (t.status !== 'done' && d !== null && d < 0) { dueCls = 'over'; dueTxt = `📅 逾期 ${-d} 天`; }
+  else if (t.status !== 'done' && d === 0) { dueCls = 'today'; dueTxt = '📅 今天'; }
+  const MOVES = {
+    todo:  [['doing','▶ 開始'], ['done','✓ 完成']],
+    doing: [['done','✓ 完成'], ['todo','⟲ 待辦']],
+    done:  [['doing','↩ 進行中'], ['todo','⟲ 待辦']],
+  };
+  const moveBtns = (MOVES[t.status] || [])
+    .map(([to, lbl]) => `<button data-act="move" data-to="${to}" data-id="${esc(t.id)}">${lbl}</button>`).join('');
+  return `<div class="card" draggable="true" data-id="${esc(t.id)}" style="border-left-color:${s.color}">
+    <div class="title ${t.status==='done'?'done-text':''}">${esc(t.title)}</div>
+    ${t.notes ? `<div class="notes-preview">${esc(t.notes)}</div>` : ''}
+    <div class="meta">
+      <span class="tag">${esc(s.name)}</span>
+      <span class="pri ${esc(t.pri)}">${PRI_NAME[t.pri] || '中'}</span>
+      ${dueTxt ? `<span class="due-tag ${dueCls}">${esc(dueTxt)}</span>` : ''}
+    </div>
+    <div class="ops">${moveBtns}<button data-act="edit" data-id="${esc(t.id)}">✎ 編輯</button></div>
+  </div>`;
+}
+
+/* ---------- 週期流程 ---------- */
+function isoWeek(dateStr) {
+  // 回傳 'YYYY-Wxx'，用來判斷雷達清單是否該歸零
+  const d = new Date(dateStr + 'T00:00:00');
+  const day = (d.getDay() + 6) % 7;            // 週一=0
+  d.setDate(d.getDate() - day + 3);            // 週四定錨
+  const firstThu = new Date(d.getFullYear(), 0, 4);
+  const fday = (firstThu.getDay() + 6) % 7;
+  firstThu.setDate(firstThu.getDate() - fday + 3);
+  const wk = 1 + Math.round((d - firstThu) / (7 * 86400000));
+  return d.getFullYear() + '-W' + String(wk).padStart(2, '0');
+}
+const weekLabel = wk => {
+  const m = /^(\d{4})-W(\d{2})$/.exec(wk);
+  return m ? `${m[1]} 年第 ${+m[2]} 週` : wk;
+};
+
+function renderFlows() {
+  const wk = isoWeek(todayStr());
+  if (state.radar.week !== wk) {              // 新的一週自動歸零
+    state.radar.week = wk;
+    state.radar.steps = {};
+    save();
+  }
+  const doneN = RADAR_STEPS.filter(s => state.radar.steps[s.id]).length;
+  const pct = Math.round(doneN / RADAR_STEPS.length * 100);
+  $('#radarPanel').innerHTML = `
+    <h3>📡 市場雷達 — 每週流程 <span class="hint">${esc(weekLabel(wk))}</span></h3>
+    <div class="wf-steps">${RADAR_STEPS.map((s,i) => `
+      <div class="wf-step ${state.radar.steps[s.id] ? 'done' : ''}" data-radar="${s.id}"
+           role="checkbox" aria-checked="${!!state.radar.steps[s.id]}" tabindex="0">
+        <span class="box" aria-hidden="true">${state.radar.steps[s.id] ? '✓' : ''}</span>
+        <span class="lbl">${i+1}. ${esc(s.lbl)}</span>
+        <span class="skill">${esc(s.skill)}</span>
+      </div>`).join('')}
+    </div>
+    <div class="wf-progress"><i style="width:${pct}%"></i></div>
+    <div class="wf-meta">
+      <span>${doneN} / ${RADAR_STEPS.length} 完成</span>
+      ${state.radar.lastDone ? `<span>上次完成整輪：${esc(fmtDateFull(state.radar.lastDone) || state.radar.lastDone)}</span>` : ''}
+      <button class="btn small" id="radarReset" style="margin-left:auto">重設本週</button>
+    </div>`;
+
+  $('#pipeList').innerHTML = state.pipes.length ? state.pipes.map(p => {
+    const firstOpen = PIPE_STAGES.findIndex(x => !p.stages[x.id]);
+    const stages = PIPE_STAGES.map((st, i) => {
+      const done = !!p.stages[st.id];
+      const cls = done ? 'done' : (i === firstOpen ? 'current' : '');
+      return `<div class="pipe-stage ${cls}" data-pipe="${esc(p.id)}" data-stage="${st.id}"
+        role="checkbox" aria-checked="${done}" tabindex="0">${done ? '✓ ' : ''}${esc(st.lbl)}</div>`;
+    }).join('');
+    return `<div class="pipe-item">
+      <div class="head"><span class="topic">${esc(p.topic)}</span>
+        <button class="btn small danger" data-pipe-del="${esc(p.id)}">刪除</button></div>
+      <div class="pipe-stages">${stages}</div>
+    </div>`;
+  }).join('') : '<div class="empty">尚無進行中的研究題目</div>';
+}
+
+/* ---------- 筆記 ---------- */
+function renderNotes() {
+  const q = searchTerm.toLowerCase();
+  const notes = state.notes
+    .filter(n => !q || String(n.text || '').toLowerCase().includes(q))
+    .slice().sort((a,b) => (b.createdAt||'').localeCompare(a.createdAt||''));
+  const thisYear = new Date().getFullYear();
+  $('#noteList').innerHTML = notes.length ? notes.map(n => {
+    const d = new Date(n.createdAt);
+    const ts = isNaN(d) ? '' :
+      `${d.getFullYear() !== thisYear ? d.getFullYear() + '/' : ''}${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    return `<div class="note">
+      <div class="body">${esc(n.text)}</div>
+      <div class="foot"><span>${ts}</span>
+        <button data-note-task="${esc(n.id)}" title="把這則筆記變成任務">→ 轉為任務</button>
+        <button data-note-del="${esc(n.id)}" style="margin-left:auto">刪除</button></div>
+    </div>`;
+  }).join('') : '<div class="empty">沒有筆記</div>';
+}
+
+/* ---------- 任務 modal ---------- */
+function openModal(task) {
+  editingId = task ? task.id : null;
+  $('#modalTitle').textContent = task ? '編輯任務' : '新增任務';
+  $('#fStream').innerHTML = STREAMS.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
+  $('#fTitle').value  = task ? task.title : '';
+  $('#fStream').value = task ? task.stream : (activeStream !== 'all' ? activeStream : 'cargo');
+  $('#fStatus').value = task ? task.status : 'todo';
+  $('#fPri').value    = task ? task.pri : 'mid';
+  $('#fDue').value    = task ? task.due : '';
+  $('#fNotes').value  = task ? task.notes : '';
+  $('#fDelete').hidden = !task;
+  $('#taskModal').showModal();
+  $('#fTitle').focus();
+}
+
+function saveModal() {                       // 回傳儲存後的任務 id
+  const title = $('#fTitle').value.trim();
+  if (!title) return null;
+  const data = {
+    title,
+    stream: $('#fStream').value,
+    status: $('#fStatus').value,
+    pri:    $('#fPri').value,
+    due:    $('#fDue').value,
+    notes:  $('#fNotes').value.trim(),
+  };
+  let id = editingId;
+  if (editingId) {
+    const t = state.tasks.find(t => t.id === editingId);
+    if (t) {
+      const wasDone = t.status === 'done';
+      Object.assign(t, data);
+      t.doneAt = data.status === 'done' ? (wasDone ? t.doneAt : new Date().toISOString()) : null;
+    }
+  } else {
+    id = uid();
+    state.tasks.push({ id, ...data, createdAt: new Date().toISOString(),
+      doneAt: data.status === 'done' ? new Date().toISOString() : null });
+  }
+  save(); render();
+  return id;
+}
+
+function setStatus(id, status) {
+  const t = state.tasks.find(t => t.id === id);
+  if (!t || t.status === status || !STATUS_IDS.includes(status)) return;
+  t.status = status;
+  t.doneAt = status === 'done' ? new Date().toISOString() : null;
+  save(); render();
+}
+
+/* 重新渲染會把原本聚焦的按鈕換掉，dialog 關閉後把焦點放回穩定的元素 */
+function refocusCard(id) {
+  requestAnimationFrame(() => {
+    const btn = id && document.querySelector(`.card[data-id="${CSS.escape(id)}"] button[data-act="edit"]`);
+    (btn || $('#newTaskBtn')).focus();
+  });
+}
+
+/* ---------- 匯出 / 匯入 ---------- */
+function exportJson() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `workhub-backup-${todayStr()}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('已匯出備份');
+}
+function importJson(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const s = JSON.parse(reader.result);
+      if (!s || typeof s !== 'object' || !Array.isArray(s.tasks)) throw new Error('格式不符');
+      if (!confirm('匯入會覆蓋目前所有資料，確定嗎？')) return;
+      state = normalizeState(s);   // 先清洗再持久化，避免壞檔覆蓋好資料
+      save();
+      render();
+      toast('匯入完成');
+    } catch (e) { toast('匯入失敗：' + e.message); }
+  };
+  reader.readAsText(file);
+}
+
+/* ---------- toast ---------- */
+let toastTimer = null;
+function toast(msg) {
+  const el = $('#toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+/* ---------- 事件 ---------- */
+$('#tabs').addEventListener('click', e => {
+  const b = e.target.closest('button[data-view]');
+  if (!b) return;
+  activeView = b.dataset.view;
+  render();
+});
+
+$('#streamFilters').addEventListener('click', e => {
+  const b = e.target.closest('button[data-stream]');
+  if (!b) return;
+  activeStream = b.dataset.stream;
+  render();
+});
+
+$('#searchBox').addEventListener('input', e => {
+  searchTerm = e.target.value.trim();
+  render();
+});
+
+$('#newTaskBtn').addEventListener('click', () => openModal(null));
+$('#fCancel').addEventListener('click', () => $('#taskModal').close());
+$('#taskForm').addEventListener('submit', e => {
+  const f = $('#fTitle');
+  if (!f.value.trim()) {                     // required 擋不住純空白
+    e.preventDefault();
+    f.setCustomValidity('請輸入標題');
+    f.reportValidity();
+    f.setCustomValidity('');
+    return;
+  }
+  const id = saveModal();
+  refocusCard(id);
+});
+$('#fDelete').addEventListener('click', () => {
+  if (!editingId) return;
+  if (!confirm('確定刪除這個任務？')) return;
+  state.tasks = state.tasks.filter(t => t.id !== editingId);
+  save(); render();
+  $('#taskModal').close();
+  refocusCard(null);
+});
+
+$('#exportBtn').addEventListener('click', exportJson);
+$('#importBtn').addEventListener('click', () => $('#importFile').click());
+$('#importFile').addEventListener('change', e => {
+  if (e.target.files[0]) importJson(e.target.files[0]);
+  e.target.value = '';
+});
+
+/* 看板：卡片操作 + 拖拉 */
+$('#board').addEventListener('click', e => {
+  const b = e.target.closest('button[data-act]');
+  if (!b) return;
+  const t = state.tasks.find(t => t.id === b.dataset.id);
+  if (!t) return;
+  if (b.dataset.act === 'edit') openModal(t);
+  else if (b.dataset.act === 'move') setStatus(t.id, b.dataset.to);
+});
+let dragId = null;
+$('#board').addEventListener('dragstart', e => {
+  const card = e.target.closest('.card');
+  if (!card) return;
+  dragId = card.dataset.id;
+  card.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', dragId);   // Firefox 必須有 setData 才會啟動拖拉
+});
+$('#board').addEventListener('dragend', e => {
+  const card = e.target.closest('.card');
+  if (card) card.classList.remove('dragging');
+  $$('.col').forEach(c => c.classList.remove('dragover'));
+  dragId = null;
+});
+$('#board').addEventListener('dragover', e => {
+  const col = e.target.closest('.col');
+  if (!col || !dragId) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  $$('.col').forEach(c => c.classList.toggle('dragover', c === col));
+});
+document.addEventListener('dragover', e => {     // 拖出欄位範圍時清掉殘留的落點提示
+  if (dragId && !e.target.closest('.col')) $$('.col').forEach(c => c.classList.remove('dragover'));
+});
+$('#board').addEventListener('drop', e => {
+  const col = e.target.closest('.col');
+  if (!col || !dragId) return;
+  e.preventDefault();
+  setStatus(dragId, col.dataset.col);
+  dragId = null;
+});
+
+/* 總覽：點 mini item 開編輯 */
+$('#view-dash').addEventListener('click', e => {
+  const item = e.target.closest('[data-edit]');
+  if (!item) return;
+  const t = state.tasks.find(t => t.id === item.dataset.edit);
+  if (t) openModal(t);
+});
+
+/* 週期流程 */
+$('#view-flows').addEventListener('click', e => {
+  const step = e.target.closest('[data-radar]');
+  if (step) {
+    const id = step.dataset.radar;
+    state.radar.steps[id] = !state.radar.steps[id];
+    if (RADAR_STEPS.every(s => state.radar.steps[s.id])) {
+      state.radar.lastDone = todayStr();
+      toast('本週雷達流程完成 🎉');
+    }
+    save(); renderFlows();
+    return;
+  }
+  if (e.target.id === 'radarReset') {
+    state.radar.steps = {};
+    save(); renderFlows();
+    return;
+  }
+  const stage = e.target.closest('[data-pipe][data-stage]');
+  if (stage) {
+    const p = state.pipes.find(p => p.id === stage.dataset.pipe);
+    if (p) { p.stages[stage.dataset.stage] = !p.stages[stage.dataset.stage]; save(); renderFlows(); }
+    return;
+  }
+  const del = e.target.closest('[data-pipe-del]');
+  if (del) {
+    const p = state.pipes.find(p => p.id === del.dataset.pipeDel);
+    if (p && confirm(`刪除研究題目「${p.topic}」？`)) {
+      state.pipes = state.pipes.filter(x => x.id !== p.id);
+      save(); renderFlows();
+    }
+  }
+});
+$('#pipeAdd').addEventListener('click', addPipe);
+$('#pipeInput').addEventListener('keydown', e => {
+  // isComposing / 229：避免中文輸入法選字的 Enter 直接送出
+  if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) addPipe();
+});
+function addPipe() {
+  const topic = $('#pipeInput').value.trim();
+  if (!topic) return;
+  state.pipes.push({ id: uid(), topic, stages: {} });
+  $('#pipeInput').value = '';
+  save(); renderFlows();
+}
+
+/* 勾選元件的鍵盤操作（Enter / 空白鍵） */
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  if (e.isComposing || e.keyCode === 229) return;
+  const el = e.target.closest('[data-radar], [data-pipe][data-stage]');
+  if (!el) return;
+  e.preventDefault();
+  el.click();
+});
+
+/* 筆記 */
+$('#noteAdd').addEventListener('click', addNote);
+$('#noteText').addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && !e.isComposing) addNote();
+});
+function addNote() {
+  const text = $('#noteText').value.trim();
+  if (!text) return;
+  state.notes.push({ id: uid(), text, createdAt: new Date().toISOString() });
+  $('#noteText').value = '';
+  save(); render();
+}
+$('#noteList').addEventListener('click', e => {
+  const del = e.target.closest('[data-note-del]');
+  if (del) {
+    if (!confirm('刪除這則筆記？')) return;
+    state.notes = state.notes.filter(n => n.id !== del.dataset.noteDel);
+    save(); render();
+    return;
+  }
+  const conv = e.target.closest('[data-note-task]');
+  if (conv) {
+    const n = state.notes.find(n => n.id === conv.dataset.noteTask);
+    if (!n) return;
+    const firstLine = String(n.text || '').split('\n')[0].slice(0, 120);
+    if (!firstLine.trim()) return;
+    state.tasks.push({ id: uid(), title: firstLine, stream: 'misc', status: 'todo', pri: 'mid',
+      due: '', notes: String(n.text || ''), createdAt: new Date().toISOString(), doneAt: null });
+    state.notes = state.notes.filter(x => x.id !== n.id);
+    save(); render();
+    toast('已轉為任務（在「其他」工作線）');
+  }
+});
+
+/* 快捷鍵：N 新增任務、/ 聚焦搜尋（按住修飾鍵時不攔截） */
+document.addEventListener('keydown', e => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.target.matches('input,textarea,select') || $('#taskModal').open) return;
+  if (e.key === 'n' || e.key === 'N') { e.preventDefault(); openModal(null); }
+  if (e.key === '/') { e.preventDefault(); $('#searchBox').focus(); }
+});
+
+/* 另一個分頁寫入時，同步本分頁的狀態，避免互相覆蓋 */
+window.addEventListener('storage', e => {
+  if (e.key === LS_KEY) { state = loadState(); render(); }
+});
+
+/* ---------- 啟動 ---------- */
+(function init() {
+  const d = new Date();
+  const wd = ['日','一','二','三','四','五','六'][d.getDay()];
+  $('#todayLabel').textContent = `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}（週${wd}）`;
+  try { if (!localStorage.getItem(LS_KEY)) save(); }   // 首次開啟，寫入預載資料
+  catch { /* 私密模式等情況拿不到 localStorage，仍以記憶體狀態運作 */ }
+  render();
+})();
+</script>
+</body>
+</html>

@@ -149,10 +149,10 @@ function initThree() {
   /* scroll choreography — orb travels as the page unfolds */
   const KEYS = [
     { p: 0.00, x: 1.55, y: -0.15, s: 1.00, amp: 0.22 },
-    { p: 0.10, x: 1.55, y: -0.15, s: 1.00, amp: 0.22 },
-    { p: 0.18, x: -1.75, y: 0.10, s: 0.72, amp: 0.30 },
-    { p: 0.30, x: -1.75, y: 0.10, s: 0.68, amp: 0.30 },
-    { p: 0.42, x: 0.00, y: -3.40, s: 0.55, amp: 0.45 },
+    { p: 0.05, x: 1.55, y: -0.15, s: 1.00, amp: 0.22 },
+    { p: 0.10, x: -1.75, y: 0.10, s: 0.72, amp: 0.30 },
+    { p: 0.13, x: -1.75, y: 0.10, s: 0.68, amp: 0.30 },
+    { p: 0.20, x: 0.00, y: -3.40, s: 0.55, amp: 0.45 },
     { p: 0.90, x: 0.00, y: -3.40, s: 0.62, amp: 0.50 },
     { p: 1.00, x: 0.00, y: -0.05, s: 1.26, amp: 0.60 },
   ];
@@ -340,6 +340,84 @@ document.fonts.ready.then(() => {
   gsap.from('.stat', {
     y: 30, opacity: 0, stagger: 0.08, duration: 0.8, ease: 'power3.out',
     scrollTrigger: { trigger: '.stats', start: 'top 85%' },
+  });
+
+  /* ── the problem: pain rows + strike-through scrub ── */
+  gsap.from('.pain-row', {
+    y: 40, opacity: 0, stagger: 0.1, duration: 0.8, ease: 'power3.out',
+    scrollTrigger: { trigger: '.pain-list', start: 'top 82%' },
+  });
+  document.querySelectorAll('.pain-row').forEach((row) => {
+    gsap.to(row.querySelector('.strike'), {
+      scaleX: 1, ease: 'none',
+      scrollTrigger: { trigger: row, start: 'top 68%', end: 'top 40%', scrub: 0.4 },
+    });
+  });
+  gsap.from('.problem-closer', {
+    opacity: 0, y: 14, duration: 0.7,
+    scrollTrigger: { trigger: '.problem-closer', start: 'top 92%' },
+  });
+
+  /* ── one-stop: the wire untangles through five stations ── */
+  const mmHow = gsap.matchMedia();
+  mmHow.add('(min-width: 701px)', () => {
+    const path = document.querySelector('.wire-path');
+    if (!path) return;
+    const len = path.getTotalLength();
+    gsap.set(path, { strokeDasharray: len, strokeDashoffset: len });
+
+    // sample the path once to find the progress at which it crosses each node
+    const samples = [];
+    const N = 400;
+    for (let i = 0; i <= N; i++) samples.push(path.getPointAtLength((len * i) / N).x);
+    const timeAtX = (cx) => {
+      const idx = samples.findIndex((x) => x >= cx);
+      return idx === -1 ? 1 : idx / N;
+    };
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: '.howit',
+        start: 'top top',
+        end: '+=1400',
+        pin: true,
+        scrub: 0.6,
+        anticipatePin: 1,
+      },
+    });
+    tl.to(path, { strokeDashoffset: 0, ease: 'none', duration: 1 }, 0);
+    document.querySelectorAll('.wire-node').forEach((node) => {
+      const cx = parseFloat(node.querySelector('circle').getAttribute('cx'));
+      const t = timeAtX(cx);
+      tl.to(node.querySelector('circle'), { fill: '#d7ff3e', stroke: '#d7ff3e', duration: 0.02 }, t);
+      tl.to(node.querySelector('text'), { fill: '#0a0a0b', duration: 0.02 }, t);
+    });
+    tl.from('.step-card', {
+      y: 36, opacity: 0, stagger: 0.075, duration: 0.2, ease: 'power2.out',
+    }, Math.max(0, timeAtX(560) - 0.08));
+  });
+  mmHow.add('(max-width: 700px)', () => {
+    gsap.from('.step-card', {
+      x: -24, opacity: 0, stagger: 0.1, duration: 0.7, ease: 'power3.out',
+      scrollTrigger: { trigger: '.steps', start: 'top 85%' },
+    });
+  });
+
+  /* ── packages: cards + per-card sequence timeline ── */
+  gsap.from('.pk-card', {
+    y: 50, opacity: 0, stagger: 0.08, duration: 0.85, ease: 'power3.out',
+    clearProps: 'transform,opacity',
+    scrollTrigger: { trigger: '.pk-grid', start: 'top 82%' },
+  });
+  document.querySelectorAll('.pk-card').forEach((card) => {
+    gsap.from(card.querySelectorAll('.pk-steps li'), {
+      x: -16, opacity: 0, stagger: 0.07, duration: 0.5, ease: 'power2.out',
+      scrollTrigger: { trigger: card, start: 'top 72%' },
+    });
+    gsap.from(card.querySelector('.pk-line'), {
+      scaleY: 0, duration: 0.8, ease: 'power2.out',
+      scrollTrigger: { trigger: card, start: 'top 72%' },
+    });
   });
 
   /* ── zones: pinned horizontal drag-through ── */
