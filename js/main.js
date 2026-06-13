@@ -367,8 +367,8 @@ document.fonts.ready.then(() => {
 
   /* ── floor reality: parallax photo + headline + ticker ── */
   if (document.querySelector('.floor')) {
-    gsap.to('.floor-media img', {
-      yPercent: 12, ease: 'none',
+    gsap.fromTo('.floor-media img', { yPercent: 6 }, {
+      yPercent: -6, ease: 'none',
       scrollTrigger: { trigger: '.floor', start: 'top bottom', end: 'bottom top', scrub: true },
     });
     const floorSplit = new SplitText('.floor-head span', { type: 'lines', mask: 'lines' });
