@@ -20,8 +20,35 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
+  <script>
+    /* no-flash: returning unlocked visitors skip the gate before first paint */
+    try { if (localStorage.getItem('cargo.unlocked') === '1') document.documentElement.classList.add('unlocked'); } catch (e) {}
+  </script>
 </head>
 <body>
+
+  <!-- ══════════ EMAIL GATE ══════════ -->
+  <div class="gate" id="gate">
+    <div class="gate-bg" aria-hidden="true"></div>
+    <div class="gate-inner">
+      <svg class="lug gate-lug" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true">
+        <circle cx="12" cy="12" r="2.6" fill="currentColor"/>
+        <circle cx="12" cy="4.5" r="1.9" fill="currentColor"/>
+        <circle cx="19.1" cy="9.7" r="1.9" fill="currentColor"/>
+        <circle cx="16.4" cy="18.1" r="1.9" fill="currentColor"/>
+        <circle cx="7.6" cy="18.1" r="1.9" fill="currentColor"/>
+        <circle cx="4.9" cy="9.7" r="1.9" fill="currentColor"/>
+      </svg>
+      <p class="gate-kicker">CARGO SALON ’27 ✱ INVITE ONLY</p>
+      <h1 class="gate-title"><span>FIRST</span><span class="outline">ACCESS</span></h1>
+      <p class="gate-sub">Drop your email to step onto the floor. Ticket waves, exhibitor drops and program reveals land here first.</p>
+      <form class="gate-form" novalidate>
+        <input type="email" inputmode="email" autocomplete="email" placeholder="your@email.com" aria-label="Email address" required />
+        <button type="submit" class="btn btn-volt">ENTER&nbsp;✱</button>
+      </form>
+      <p class="gate-note">One email, one time. We’ll only write when it matters.</p>
+    </div>
+  </div>
 
   <div class="grain" aria-hidden="true"></div>
   <div class="cursor-dot" aria-hidden="true"></div>

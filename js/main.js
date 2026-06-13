@@ -273,17 +273,64 @@ document.fonts.ready.then(() => {
 
   const num = document.getElementById('loadNum');
   const count = { v: 0 };
-  gsap.to(count, {
-    v: 100,
-    duration: reduced ? 0.2 : 1.6,
-    ease: 'power2.inOut',
-    onUpdate: () => { num.textContent = String(Math.round(count.v)).padStart(2, '0'); },
-    onComplete: () => {
-      intro.timeScale(reduced ? 10 : 1).play();
-      lenis && lenis.start();
-      ScrollTrigger.refresh();
-    },
-  });
+  const runIntro = () => {
+    gsap.to(count, {
+      v: 100,
+      duration: reduced ? 0.2 : 1.6,
+      ease: 'power2.inOut',
+      onUpdate: () => { num.textContent = String(Math.round(count.v)).padStart(2, '0'); },
+      onComplete: () => {
+        intro.timeScale(reduced ? 10 : 1).play();
+        lenis && lenis.start();
+        ScrollTrigger.refresh();
+      },
+    });
+  };
+
+  /* ── email gate (soft) ── */
+  const SHEET_URL = ''; // ← paste your Google Apps Script /exec URL here to start collecting
+  const validEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  const submitEmail = (email, source) => {
+    if (!SHEET_URL) return Promise.resolve();
+    return fetch(SHEET_URL, {
+      method: 'POST', mode: 'no-cors',
+      body: new URLSearchParams({ email, source }),
+    }).catch(() => {});
+  };
+
+  const gate = document.getElementById('gate');
+  if (document.documentElement.classList.contains('unlocked')) {
+    runIntro();
+  } else {
+    document.documentElement.classList.add('gated');
+    const gForm = gate.querySelector('.gate-form');
+    const gInput = gForm.querySelector('input');
+    gsap.from('.gate-inner > *', { y: 22, opacity: 0, duration: 0.7, stagger: 0.08, ease: 'power3.out', delay: 0.15 });
+    const openSite = () => {
+      try { localStorage.setItem('cargo.unlocked', '1'); } catch (e) {}
+      gsap.to(gate, {
+        opacity: 0, duration: 0.6, ease: 'power3.inOut',
+        onComplete: () => {
+          document.documentElement.classList.remove('gated');
+          document.documentElement.classList.add('unlocked');
+          gate.style.display = 'none';
+          runIntro();
+        },
+      });
+    };
+    gForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = gInput.value.trim();
+      if (!validEmail(email)) {
+        gInput.classList.add('err');
+        gsap.fromTo(gForm, { x: -7 }, { x: 0, duration: 0.45, ease: 'elastic.out(1, 0.4)' });
+        return;
+      }
+      gInput.classList.remove('err');
+      submitEmail(email, 'gate');
+      openSite();
+    });
+  }
 
   /* ── nav: glass after hero, hide on scroll down ── */
   const nav = document.querySelector('.nav');
@@ -642,8 +689,8 @@ document.fonts.ready.then(() => {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const input = form.querySelector('input');
-    const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
-    if (!ok) { showToast('That email needs a second look ✱'); return; }
+    if (!validEmail(input.value.trim())) { showToast('That email needs a second look ✱'); return; }
+    submitEmail(input.value.trim(), 'footer');
     form.innerHTML = '<p style="font-family:var(--font-mono);font-size:14px;color:var(--volt);letter-spacing:.08em;padding:14px 0;">YOU’RE ON THE LIST — SEE YOU IN TAIPEI ✱</p>';
     showToast('Subscribed. Build season is coming ✱');
   });
