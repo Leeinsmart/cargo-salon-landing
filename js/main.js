@@ -365,6 +365,24 @@ document.fonts.ready.then(() => {
     scrollTrigger: { trigger: '.stats', start: 'top 85%' },
   });
 
+  /* ── floor reality: parallax photo + headline + ticker ── */
+  if (document.querySelector('.floor')) {
+    gsap.to('.floor-media img', {
+      yPercent: 12, ease: 'none',
+      scrollTrigger: { trigger: '.floor', start: 'top bottom', end: 'bottom top', scrub: true },
+    });
+    const floorSplit = new SplitText('.floor-head span', { type: 'lines', mask: 'lines' });
+    gsap.from(floorSplit.lines, {
+      yPercent: 120, duration: 1.1, ease: 'power4.out', stagger: 0.1,
+      scrollTrigger: { trigger: '.floor-overlay', start: 'top 80%' },
+    });
+    gsap.from(['.floor-kicker', '.floor-cap'], {
+      opacity: 0, y: 20, duration: 0.8, stagger: 0.15, ease: 'power3.out',
+      scrollTrigger: { trigger: '.floor-overlay', start: 'top 78%' },
+    });
+    gsap.to('.floor-ticker-track', { xPercent: -50, duration: 26, ease: 'none', repeat: -1 });
+  }
+
   /* ── the problem: pain rows + strike-through scrub ── */
   gsap.from('.pain-row', {
     y: 40, opacity: 0, stagger: 0.1, duration: 0.8, ease: 'power3.out',
