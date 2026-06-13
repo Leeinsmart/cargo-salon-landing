@@ -289,7 +289,7 @@ document.fonts.ready.then(() => {
 
   /* ── email gate (soft) ── */
   const SHEET_URL = 'https://script.google.com/macros/s/AKfycbypt33Z_k3aHulMxmjR57z9u8IqadKF6zdWxRc7Ubd5rdz7tfESGOoNWO2SM6zg5SVE/exec';
-  const validEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  const validEmail = (v) => /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(v);
   const submitEmail = (email, source) => {
     if (!SHEET_URL) return Promise.resolve();
     return fetch(SHEET_URL, {
@@ -318,11 +318,17 @@ document.fonts.ready.then(() => {
         },
       });
     };
+    /* live validation: flag a bad format as the visitor types (not when empty) */
+    gInput.addEventListener('input', () => {
+      const v = gInput.value.trim();
+      gInput.classList.toggle('err', v.length > 0 && !validEmail(v));
+    });
     gForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const email = gInput.value.trim();
       if (!validEmail(email)) {
         gInput.classList.add('err');
+        gInput.focus();
         gsap.fromTo(gForm, { x: -7 }, { x: 0, duration: 0.45, ease: 'elastic.out(1, 0.4)' });
         return;
       }
