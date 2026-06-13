@@ -288,7 +288,7 @@ document.fonts.ready.then(() => {
   };
 
   /* ── email gate (soft) ── */
-  const SHEET_URL = ''; // ← paste your Google Apps Script /exec URL here to start collecting
+  const SHEET_URL = 'https://script.google.com/macros/s/AKfycbypt33Z_k3aHulMxmjR57z9u8IqadKF6zdWxRc7Ubd5rdz7tfESGOoNWO2SM6zg5SVE/exec';
   const validEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
   const submitEmail = (email, source) => {
     if (!SHEET_URL) return Promise.resolve();
