@@ -267,9 +267,8 @@ document.fonts.ready.then(() => {
     .to('.loader-col', { yPercent: -100, duration: 0.85, ease: 'power4.inOut', stagger: 0.1 }, '-=0.05')
     .set('.loader', { display: 'none' })
     .from(heroChars, { yPercent: 120, duration: 1.1, stagger: 0.032 }, '-=0.55')
-    .from('.hero-meta .hm', { y: 16, opacity: 0, duration: 0.7, stagger: 0.08 }, '-=0.7')
+    .from('.hero-date', { y: 16, opacity: 0, duration: 0.7 }, '-=0.7')
     .from('.hero-foot > *', { y: 24, opacity: 0, duration: 0.8, stagger: 0.1 }, '-=0.6')
-    .from('.hero-badge', { scale: 0, opacity: 0, duration: 0.8, ease: 'back.out(1.6)' }, '-=0.6')
     .from('.scroll-cue', { opacity: 0, duration: 0.5 }, '-=0.3');
 
   const num = document.getElementById('loadNum');

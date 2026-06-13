@@ -266,15 +266,17 @@ section, footer { padding: clamp(90px, 12vw, 170px) var(--pad); }
   padding-bottom: clamp(28px, 4vh, 56px);
   overflow: clip;
 }
-.hero-meta {
+.hero-date {
   position: absolute;
-  top: clamp(86px, 12vh, 130px);
-  left: var(--pad); right: var(--pad);
-  display: flex; justify-content: space-between; gap: 16px;
-  font-family: var(--font-mono); font-size: clamp(10px, 1.1vw, 12.5px);
-  letter-spacing: 0.18em; color: var(--dim);
+  top: clamp(92px, 13vh, 138px);
+  left: var(--pad);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: clamp(16px, 1.9vw, 26px);
+  letter-spacing: 0.22em;
+  color: var(--volt);
 }
-.hero-meta .hm:nth-child(2) { color: var(--ink); }
+.hero-date::before { content: "✱ "; font-size: 0.8em; }
 .hero-title {
   font-variation-settings: var(--wide);
   font-weight: 900;
@@ -296,19 +298,6 @@ section, footer { padding: clamp(90px, 12vw, 170px) var(--pad); }
 .hero-sub { font-size: clamp(15px, 1.6vw, 21px); line-height: 1.45; color: #c9c7c0; }
 .hero-sub em { font-style: normal; color: var(--volt); }
 .hero-cta { display: flex; flex-wrap: wrap; gap: 14px; }
-.hero-badge {
-  position: absolute;
-  right: clamp(16px, 5vw, 80px);
-  top: clamp(120px, 20vh, 220px);
-  width: 150px; height: 150px;
-  display: grid; place-items: center;
-}
-.hero-badge > svg:first-child { position: absolute; inset: 0; animation: spin 16s linear infinite; }
-.hero-badge text {
-  font-family: var(--font-mono); font-size: 12.5px; letter-spacing: 0.32em;
-  fill: var(--dim);
-}
-.badge-lug { color: var(--volt); }
 .scroll-cue {
   position: absolute;
   left: 50%; bottom: 18px;
@@ -885,11 +874,8 @@ footer {
   .stat:nth-child(n+3) { border-bottom: 0; }
 }
 @media (max-width: 700px) {
-  .hero-badge { display: none; }
   .scroll-cue { display: none; }
   .hero-title .l2 { margin-left: 10vw; }
-  .hero-meta { flex-direction: column; gap: 6px; }
-  .hero-meta .hm:nth-child(2) { display: none; }
   .tk-grid { grid-template-columns: 1fr; }
   .pk-grid { grid-template-columns: 1fr; }
   .pain-row { grid-template-columns: 1fr; gap: 8px; }
@@ -917,6 +903,6 @@ footer {
 
 /* ── reduced motion ──────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .grain, .lug-spin, .hero-badge > svg:first-child, .cue-line { animation: none; }
+  .grain, .lug-spin, .cue-line { animation: none; }
   * { transition-duration: 0.01ms !important; }
 }
