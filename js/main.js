@@ -438,8 +438,17 @@ document.fonts.ready.then(() => {
     }, Math.max(0, timeAtX(560) - 0.08));
   });
   mmHow.add('(max-width: 700px)', () => {
+    const wm = document.querySelector('.wm-path');
+    if (wm) {
+      const L = wm.getTotalLength();
+      gsap.set(wm, { strokeDasharray: L, strokeDashoffset: L });
+      gsap.to(wm, {
+        strokeDashoffset: 0, ease: 'none',
+        scrollTrigger: { trigger: '.steps', start: 'top 82%', end: 'bottom 75%', scrub: 0.5 },
+      });
+    }
     gsap.from('.step-card', {
-      x: -24, opacity: 0, stagger: 0.1, duration: 0.7, ease: 'power3.out',
+      x: -24, opacity: 0, stagger: 0.12, duration: 0.7, ease: 'power3.out',
       scrollTrigger: { trigger: '.steps', start: 'top 85%' },
     });
   });
