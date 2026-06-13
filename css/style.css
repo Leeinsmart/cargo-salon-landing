@@ -655,6 +655,7 @@ section, footer { padding: clamp(90px, 12vw, 170px) var(--pad); }
   width: max-content;
 }
 .zone-card {
+  position: relative;
   width: clamp(300px, 38vw, 520px);
   min-height: clamp(380px, 56vh, 540px);
   border: 1px solid var(--line);
@@ -662,9 +663,28 @@ section, footer { padding: clamp(90px, 12vw, 170px) var(--pad); }
   padding: clamp(20px, 2.4vw, 36px);
   display: flex; flex-direction: column;
   border-radius: 18px;
+  overflow: hidden;
   transition: border-color 0.35s, background 0.35s, transform 0.35s;
 }
 .zone-card:hover { border-color: var(--volt); transform: translateY(-8px); }
+.z-media { position: absolute; inset: 0; z-index: 0; }
+.z-media img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  filter: brightness(0.62) contrast(1.05) saturate(0.95);
+  transform: scale(1.04);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.z-media::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(10,10,11,0.94) 8%, rgba(10,10,11,0.55) 45%, rgba(10,10,11,0.32) 72%, rgba(10,10,11,0.6) 100%);
+}
+.zone-card:hover .z-media img { transform: scale(1.1); }
+.zone-card > header,
+.zone-card > h3,
+.zone-card > p,
+.zone-card > .z-tags { position: relative; z-index: 1; }
 .zone-card header {
   display: flex; justify-content: space-between; align-items: baseline;
   font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.16em;
