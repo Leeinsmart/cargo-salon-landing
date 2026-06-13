@@ -166,8 +166,8 @@ html.unlocked .gate { display: none; }
   border: 1px solid rgba(242, 240, 234, 0.22);
   border-radius: 999px;
   color: var(--ink);
-  font-family: var(--font-mono); font-size: 13.5px;
-  padding: 15px 22px;
+  font-family: var(--font-mono); font-size: 16px; /* 16px stops iOS Safari auto-zoom on focus */
+  padding: 14px 22px;
   outline: none;
   transition: border-color 0.3s;
 }
@@ -1001,7 +1001,7 @@ footer {
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--ink);
-  font-family: var(--font-mono); font-size: 13px;
+  font-family: var(--font-mono); font-size: 16px; /* 16px stops iOS Safari auto-zoom on focus */
   padding: 14px 22px;
   outline: none;
   transition: border-color 0.3s;
