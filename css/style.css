@@ -1070,6 +1070,9 @@ footer {
   .gate-form .btn { padding-block: 15px; }
   .floor-head { font-size: clamp(30px, 10vw, 60px); font-variation-settings: "wdth" 100; letter-spacing: -0.02em; }
   .floor-cap { font-size: 14px; }
+  /* menu words must fit the narrow width, not scale by viewport height */
+  .menu-links a { font-size: clamp(24px, 7.2vw, 46px); font-variation-settings: "wdth" 100; gap: 12px; }
+  .menu-links a i { font-size: 11px; }
   .lang { display: none; }
   .nav { gap: 12px; }
   .nav-right { gap: 10px; }
